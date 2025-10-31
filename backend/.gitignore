@@ -1,0 +1,59 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+out/
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+
+# Coverage
+coverage/
+*.lcov
+
+# Temporary files
+tmp/
+temp/
+
+# Cache
+.cache/
+.next/
+.nuxt/
+.svelte-kit/
+vite-cache/
+eslintcache
+
+# Lockfiles (opcional, se quiser evitar conflitos entre gerenciadores)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Optional: se usar Docker
+docker-compose.override.yml
+*.pid
