@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Usuário</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      width: 320px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      text-align: center;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Criar Conta</h2>
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p id="mensagem"></p>
+  </div>
+
+  <script>
+    async function cadastrar() {
+      // ✅ Captura os valores corretamente antes de usar
+      const nome = document.getElementById("nome").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const pwd = document.getElementById("senha").value.trim();
+      const mensagem = document.getElementById("mensagem");
+
+      if (!nome || !email || !pwd) {
+        mensagem.textContent = "Preencha todos os campos!";
+        mensagem.style.color = "red";
+        return;
+      }
+
+      try {
+        const resposta = await fetch("http://localhost:33333/user/cadastro", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ nome, email, pwd })
+        });
+
+        const dados = await resposta.json();
+
+        if (resposta.ok) {
+          mensagem.textContent = "Cadastro realizado com sucesso!";
+          mensagem.style.color = "green";
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        } else {
+          mensagem.textContent = dados.message || "Erro ao cadastrar.";
+          mensagem.style.color = "red";
+        }
+      } catch (erro) {
+        mensagem.textContent = "Erro de conexão com o servidor.";
+        mensagem.style.color = "red";
+        console.error(erro);
+      }
+    }
+  </script>
+</body>
+</html>

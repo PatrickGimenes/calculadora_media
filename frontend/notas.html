@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Notas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: calc(50% - 10px);
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    @media (max-width: 500px) {
+      input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Calcular Média</h2>
+    <input id="nome" class="full-width" placeholder="Nome do aluno">
+    <div>
+      <input id="nota1" type="number" placeholder="Nota 1">
+      <input id="nota2" type="number" placeholder="Nota 2">
+    </div>
+    <div>
+      <input id="nota3" type="number" placeholder="Nota 3">
+      <input id="nota4" type="number" placeholder="Nota 4">
+    </div>
+    <button onclick="calcular()">Salvar</button>
+    <button onclick="carregarNotas()">Ver Notas</button>
+    <button onclick="logout()">Sair</button>
+
+    <table id="tabelaNotas"></table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "index.html";
+
+    async function calcular() {
+      const nomeInput = document.getElementById("nome");
+      const nota1Input = document.getElementById("nota1");
+      const nota2Input = document.getElementById("nota2");
+      const nota3Input = document.getElementById("nota3");
+      const nota4Input = document.getElementById("nota4");
+
+      const nome = nomeInput.value.trim();
+      const notas = [
+        Number(nota1Input.value),
+        Number(nota2Input.value),
+        Number(nota3Input.value),
+        Number(nota4Input.value)
+      ];
+
+      if (!nome || notas.some(isNaN)) {
+        alert("Preencha todos os campos corretamente!");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:33333/calcular/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            nome,
+            nota1: notas[0],
+            nota2: notas[1],
+            nota3: notas[2],
+            nota4: notas[3]
+          })
+        });
+
+        const data = await res.json();
+        let media = data.data.finalMedia;
+
+        console.log(media)
+        alert(res.ok ? "Média calculada! \n" + media  : data.message);
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao conectar com o servidor.");
+      }
+    }
+
+    async function carregarNotas() {
+      try {
+        const res = await fetch("http://localhost:33333/calcular/notas", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+
+        const notas = await res.json();
+        const tabela = document.getElementById("tabelaNotas");
+        tabela.innerHTML = "<tr><th>Nome</th><th>Média</th><th>Situação</th></tr>";
+
+        notas.forEach(n => {
+          tabela.innerHTML += `<tr>
+            <td>${n.nome}</td>
+            <td>${n.media}</td>
+            <td>${n.situacao}</td>
+          </tr>`;
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Erro ao carregar as notas.");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

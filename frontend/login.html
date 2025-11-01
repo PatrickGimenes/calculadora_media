@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <input id="email" type="text" placeholder="E-mail">
+    <input id="senha" type="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+    <a href="cadastro.html">Cadastrar-se</a>
+  </div>
+
+<script>
+  async function login() {
+    const emailInput = document.getElementById("email").value;
+    const senhaInput = document.getElementById("senha").value;
+
+    const res = await fetch("http://localhost:33333/user/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailInput, pwd: senhaInput }) // pwd = backend espera
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem("token", data.accessToken); // accessToken = seu backend retorna
+      window.location.href = "notas.html";
+    } else {
+      alert(data.error || "Erro ao fazer login");
+    }
+  }
+</script>
+
+</body>
+</html>
